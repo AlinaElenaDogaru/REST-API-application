@@ -1,18 +1,16 @@
-require("dotenv").config(); // Importăm dotenv pentru a citi variabilele de mediu
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+require('dotenv').config();
 
-const DB_URI = process.env.MONGO_URI; // Luăm URL-ul din .env
+const dbURI = process.env.MONGO_URI;
 
-if (!DB_URI) {
-  console.error("Missing MONGO_URI in .env file");
-  process.exit(1);
-}
+mongoose.connect(dbURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
-mongoose.connect(DB_URI)
-  .then(() => console.log("✅ Database connection successful"))
-  .catch(error => {
-    console.error("❌ Database connection error:", error.message);
-    process.exit(1);
-  });
+const db = mongoose.connection;
 
-module.exports = mongoose;
+db.on('error', (error) => console.error('❌ Database connection error:', error));
+db.once('open', () => console.log('✅ Database connection successful'));
+
+module.exports = db;

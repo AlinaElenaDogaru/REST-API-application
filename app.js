@@ -1,15 +1,19 @@
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-const mongoose = require("./models/db"); 
+const path = require("path");
+const mongoose = require("./models/db");
 const contactsRouter = require("./routes/api/contactsRoutes");
-const userRouter = require("./routes/api/userRoutes"); 
+const userRouter = require("./routes/api/userRoutes");
 
 const app = express();
 
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
+
+// Configurare pentru distribuția fișierelor statice
+app.use("/avatars", express.static(path.join(__dirname, "public/avatars")));
 
 app.use("/api/contacts", contactsRouter);
 app.use("/api/users", userRouter);
@@ -19,3 +23,4 @@ app.use((req, res) => {
 });
 
 module.exports = app;
+
