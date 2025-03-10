@@ -100,10 +100,39 @@ router.patch('/avatars', authMiddleware.auth, upload.single('avatar'), async (re
   }
 });
 
+// routes/users.js
+
+router.get('/verify/:verificationToken', async (req, res) => {
+  try {
+    const { verificationToken } = req.params;
+
+    // Găsește utilizatorul pe baza token-ului
+    const user = await User.findOne({ verificationToken });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Actualizează datele utilizatorului
+    user.verificationToken = null; // Setăm token-ul la null
+    user.verify = true; // Marcăm utilizatorul ca verificat
+    await user.save(); // Salvăm modificările în baza de date
+
+    res.status(200).json({ message: 'Verification successful' });
+  } catch (error) {
+    console.error('Eroare la verificare:', error.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+router.post('/verify', userController.resendVerificationEmail);
+
+
+
 // ✅ Endpoint-uri pentru autentificare
 router.post('/signup', userController.signup);
 router.post('/login', userController.login);
 router.get('/logout', authMiddleware.auth, userController.logout);
 router.get('/current', authMiddleware.auth, userController.currentUser);
+
 
 module.exports = router;
