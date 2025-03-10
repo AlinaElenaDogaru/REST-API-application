@@ -24,13 +24,19 @@ const userSchema = new mongoose.Schema({
   token: {
     type: String,
     default: null
-  }
+  },
+  verify: {
+    type: Boolean,
+    default: false, // Implicit este neverificat
+  },
+ verificationToken: {
+  type: String,
+  default: null // Permite valori null implicit
+},
+
 });
 
 // Evită suprascrierea modelului dacă este deja definit
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 module.exports = User;
-
-
-
